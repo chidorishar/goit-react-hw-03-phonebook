@@ -9,13 +9,30 @@ import { ContactForm, ContactList, Filter } from './AllComponents';
 export class App extends Component {
   state = {
     contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+      // { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      // { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      // { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      // { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
   };
+
+  LS_KEY = 'contacts';
+
+  componentDidMount() {
+    let readFromLSContacts = null;
+
+    try {
+      readFromLSContacts = JSON.parse(localStorage.getItem(this.LS_KEY));
+    } catch (error) {
+      console.log(
+        'There is occurred error while attempting to read data from local storage!'
+      );
+    }
+
+    if (readFromLSContacts)
+      this.setState({ ...this.state, contacts: readFromLSContacts });
+  }
 
   onContactAdd = ({ name, number }) => {
     if (this.hasContactWithName(name)) {
@@ -25,22 +42,28 @@ export class App extends Component {
 
     this.setState(prevState => {
       const normName = name.trim();
+      const updatedContacts = [
+        ...prevState.contacts,
+        { name: normName, number, id: nanoid() },
+      ];
+      this.updateContactsDataInLS(updatedContacts);
 
       return {
-        contacts: [
-          ...prevState.contacts,
-          { name: normName, number, id: nanoid() },
-        ],
+        contacts: updatedContacts,
       };
     });
   };
 
   onRemoveContact = contactIdToRemove => {
     this.setState(prevState => {
+      const updatedContacts = prevState.contacts.filter(
+        ({ id }) => id !== contactIdToRemove
+      );
+
+      this.updateContactsDataInLS(updatedContacts);
+
       return {
-        contacts: prevState.contacts.filter(
-          ({ id }) => id !== contactIdToRemove
-        ),
+        contacts: updatedContacts,
       };
     });
   };
@@ -64,6 +87,10 @@ export class App extends Component {
     return this.state.contacts.some(
       ({ name }) => name.toLowerCase() === searchNameNormalized
     );
+  };
+
+  updateContactsDataInLS = contactsData => {
+    localStorage.setItem(this.LS_KEY, JSON.stringify(contactsData));
   };
 
   render() {
