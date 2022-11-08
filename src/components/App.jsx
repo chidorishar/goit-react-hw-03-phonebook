@@ -30,8 +30,14 @@ export class App extends Component {
       );
     }
 
-    if (readFromLSContacts)
-      this.setState({ ...this.state, contacts: readFromLSContacts });
+    if (readFromLSContacts) this.setState({ contacts: readFromLSContacts });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    let { contacts } = this.state;
+
+    contacts !== prevState.contacts &&
+      localStorage.setItem(this.LS_KEY, JSON.stringify(contacts));
   }
 
   onContactAdd = ({ name, number }) => {
@@ -46,7 +52,6 @@ export class App extends Component {
         ...prevState.contacts,
         { name: normName, number, id: nanoid() },
       ];
-      this.updateContactsDataInLS(updatedContacts);
 
       return {
         contacts: updatedContacts,
@@ -59,8 +64,6 @@ export class App extends Component {
       const updatedContacts = prevState.contacts.filter(
         ({ id }) => id !== contactIdToRemove
       );
-
-      this.updateContactsDataInLS(updatedContacts);
 
       return {
         contacts: updatedContacts,
@@ -87,10 +90,6 @@ export class App extends Component {
     return this.state.contacts.some(
       ({ name }) => name.toLowerCase() === searchNameNormalized
     );
-  };
-
-  updateContactsDataInLS = contactsData => {
-    localStorage.setItem(this.LS_KEY, JSON.stringify(contactsData));
   };
 
   render() {
