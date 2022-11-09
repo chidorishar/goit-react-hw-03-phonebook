@@ -20,17 +20,14 @@ export class App extends Component {
   LS_KEY = 'contacts';
 
   componentDidMount() {
-    let readFromLSContacts = null;
-
     try {
-      readFromLSContacts = JSON.parse(localStorage.getItem(this.LS_KEY));
+      const readFromLSContacts = JSON.parse(localStorage.getItem(this.LS_KEY));
+      this.setState({ contacts: readFromLSContacts });
     } catch (error) {
       console.log(
         'There is occurred error while attempting to read data from local storage!'
       );
     }
-
-    if (readFromLSContacts) this.setState({ contacts: readFromLSContacts });
   }
 
   componentDidUpdate(prevProps, prevState) {

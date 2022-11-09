@@ -21,8 +21,7 @@ export class ContactForm extends Component {
     e.preventDefault();
 
     this.props.onSubmitCallback(this.state);
-
-    e.currentTarget.reset();
+    this.setState({ name: '', number: '' });
   };
 
   onInput = evt => {
