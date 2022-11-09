@@ -21,7 +21,8 @@ export class App extends Component {
 
   componentDidMount() {
     try {
-      const readFromLSContacts = JSON.parse(localStorage.getItem(this.LS_KEY));
+      let readFromLSContacts = JSON.parse(localStorage.getItem(this.LS_KEY));
+      readFromLSContacts ??= [];
       this.setState({ contacts: readFromLSContacts });
     } catch (error) {
       console.log(
@@ -82,6 +83,8 @@ export class App extends Component {
   };
 
   hasContactWithName = searchName => {
+    if (!this.state.contacts) return;
+
     const searchNameNormalized = searchName.trim().toLowerCase();
 
     return this.state.contacts.some(
